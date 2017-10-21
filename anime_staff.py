@@ -3,7 +3,7 @@ from collections import defaultdict
 import os
 
 # log setting
-LOG_FORMAT = '[%(levelname)s]%(asctime)s | %(filename)s[line:%(lineno)d][%(funcName)s]: %(message)s'
+LOG_FORMAT = '%(asctime)s | [%(levelname)s]%(filename)s[line:%(lineno)d][%(funcName)s]: %(message)s'
 logging.basicConfig(level=logging.INFO,
                     format=LOG_FORMAT,
                     datefmt='%d %b %Y %H:%M:%S',
@@ -30,6 +30,22 @@ class AnimeStaff:
         self.episode[episode] = ep_staff
         logger.info('<{}>-章节 {} 已添加'.format(self.title, episode))
 
+    def save(self):
+        path = os.path.join('.', 'animes')
+        if not os.path.exists(path):
+            os.mkdir(path)
+        filename = self.title + '.txt'
+        for x in ['\\', '/', ':', '*', '?', '"', '<', '>', '|']:    # 排除windows非法字符
+            filename = filename.replace(x, '')
+        filepath = os.path.join(path, filename)
+        with open(filepath, 'a', encoding='utf-8') as file:
+            content = '■ {}'.format(self.title) + '\n'
+            for episode, ep_staffs in self.episode.items():
+                content += ep_staffs.text()
+            content += '\n'
+            file.write(content)
+        logger.info('<{}>信息已保存'.format(self.title))
+
 
 class EpisodeStaff:
 
@@ -40,7 +56,17 @@ class EpisodeStaff:
 
     def add_staff(self, position, name):
         self.staffs[position].add(name)
-        
+
+    def text(self):
+        txt = '{} {}:\n'.format(self.episode, self.subtitle)
+        for position, staffs in self.staffs.items():
+            txt += '·{}: '.format(position)
+            for name in staffs:
+                txt += name + '、'
+            txt = txt[:-1]
+            txt += '\n'
+        return txt
+
 
 class PersonResume:
 
@@ -88,6 +114,9 @@ class Persons:
 
     def __getitem__(self, item):
         return self.who[item]
+
+    def __setitem__(self, key, value):
+        self.who[key] = value
 
     def add_person(self, name):
         if self[name] is not None:
