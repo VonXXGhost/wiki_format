@@ -1,0 +1,3 @@
+# wiki_format
+
+基于作画wiki和seesaawiki格式化动画staff和个人履历
