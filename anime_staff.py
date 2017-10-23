@@ -82,11 +82,17 @@ class PersonResume:
         logger.info('"{0}":[{1}][{2}]-[{3}]已添加'.format(self.name, title, position, episode))
         return True
 
-    def print_all(self):
-        for k1, v1 in self.positions.items():
-            for k2, v2 in v1.items():
-                for k in v2:
-                    print('"{0}":{1}-{2}-{3}'.format(self.name, k1, k2, k))
+    def text(self):
+        content = ''
+        for title, positions in self.positions.items():
+            content += '■ {}'.format(title) + '\n\t'
+            for position, episodes in self.positions[title].items():
+                content += '·{}:'.format(position)
+                for episode in episodes:
+                    content += ' ' + episode
+                content += '\n\t'
+            content += '\n'
+        return content
 
     def save(self):
         path = os.path.join('.', 'resumes')
@@ -95,15 +101,7 @@ class PersonResume:
         filename = self.name + '.txt'
         filepath = os.path.join(path, filename)
         with open(filepath, 'a', encoding='utf-8') as file:
-            for title, positions in self.positions.items():
-                content = '■ {}'.format(title) + '\n\t'
-                for position, episodes in self.positions[title].items():
-                    content += '·{}:'.format(position)
-                    for episode in episodes:
-                        content += ' ' + episode
-                    content += '\n\t'
-                content += '\n'
-                file.write(content)
+            file.write(self.text())
         logger.info('“{}”保存完成'.format(self.name))
 
 
@@ -132,3 +130,15 @@ class Persons:
         self[name] = None
         logger.info('"{}"映射已删除'.format(name))
 
+    def save_as_one_file(self):
+        path = os.path.join('.', 'persons')
+        if not os.path.exists(path):
+            os.mkdir(path)
+        filename = 'persons.txt'
+        filepath = os.path.join(path, filename)
+        with open(filepath, 'a', encoding='utf-8') as file:
+            for name, resume in self.who.items():
+                content = '● {}:\n'.format(name)
+                content += resume.text() + '\n'
+                file.write(content)
+        logger.info('已保存全员信息为单文件')
