@@ -111,19 +111,22 @@ class Persons:
         self.who = defaultdict(lambda: None)                 # ['name']：PersonResume对象
 
     def __getitem__(self, item):
+        if self.who[item] is None:
+            self.add_person(item)
         return self.who[item]
 
     def __setitem__(self, key, value):
         self.who[key] = value
 
     def add_person(self, name):
-        if self[name] is not None:
+        if self.who[name] is not None:
             logger.warning('"{}"已存在'.format(name))
-            raise RuntimeError('人物已存在')
+            return False
 
         resume = PersonResume(name)
         self[name] = resume
         logger.info('"{}"映射已建立'.format(name))
+        return True
 
     def del_person(self, name):
         # 注：不检查键是否存在

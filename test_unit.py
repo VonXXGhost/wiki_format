@@ -20,12 +20,13 @@ class TestPersons(unittest.TestCase):
         self.assertTrue(resume.add_position('t1', 'e3', 'pos1'))
         self.assertFalse(resume.add_position('t1', 'e1', 'pos1'))
 
-    def test_add_persons(self):
+    def test_add_del_persons(self):
         persons = Persons()
-        persons.add_person('test')
         persons['test'].add_position('t1', 'e1', 'pos1')
         self.assertEqual(persons['test'].positions['t1']['pos1'], list(['e1']))
-        self.assertIs(persons['none'], None)
+        self.assertFalse(persons.add_person('test'))
+        persons.del_person('test')
+        self.assertTrue(persons.add_person('test'))
 
 
 class TestAnimeStaffs(unittest.TestCase):
