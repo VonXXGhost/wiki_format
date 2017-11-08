@@ -181,8 +181,8 @@ def general_parse(boundary, persons, info):
     # 获取章节
     block_first = boundary.find_next('span', text=re_position)
     if block_first is None:
-        print('章节获取失败，可能是空章节')
-        logger.error('章节获取失败，可能是空章节')
+        print('block_first is None，章节获取失败，可能是空章节='.format())
+        logger.error('block_first is None，章节获取失败，可能是空章节')
         return
     if re.search('\d+話', block_first.get_text()):
         block_first = block_first.find_next('span', text=re_position)
@@ -198,8 +198,8 @@ def general_parse(boundary, persons, info):
     try:
         info['ep'] = re.findall('\d+', ep_info)[0]
     except:
-        print('章节获取失败，可能是空章节')
-        logger.error('章节获取失败，可能是空章节')
+        print('章节获取失败，可能是空章节:\n{}'.format(ep_info.strip()))
+        logger.error('章节获取失败，可能是空章节:\n{}'.format(ep_info.strip()))
         return
 
     element_parse(block_first, persons, pos_que, name_que, info)

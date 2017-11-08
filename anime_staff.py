@@ -16,9 +16,9 @@ LOG_FORMAT = '%(asctime)s | [%(levelname)s]%(filename)s[line:%(lineno)d][%(funcN
 # logging.getLogger('anime_staff').addHandler(console)
 # logger = logging.getLogger('anime_staff')
 logger = logging.getLogger('anime_staff')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 handler = logging.FileHandler('anime_staff.log', encoding='utf-8')
-handler.setFormatter = logging.Formatter(LOG_FORMAT, datefmt='%d %b %Y %H:%M:%S')
+handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt='%d %b %Y %H:%M:%S'))
 logger.addHandler(handler)
 
 
