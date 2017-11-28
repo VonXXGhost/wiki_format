@@ -116,6 +116,9 @@ class PersonResume:
             file.write(self.text())
         logger.info('“{}”保存完成'.format(self.name))
 
+    def get_titles_amount(self):
+        return len(self.positions)
+
 
 class Persons:
     def __init__(self):
@@ -144,6 +147,22 @@ class Persons:
         self[name] = None
         logger.info('"{}"映射已删除'.format(name))
 
+    def get_max_titles_amount(self):
+        max = 0
+        for name, resume in self.who.items():
+            length = resume.get_titles_amount()
+            if length > max:
+                max = length
+        return max
+
+    def get_max_titles_amount_persons(self):
+        max = self.get_max_titles_amount()
+        names = []
+        for name, resume in self.who.items():
+            if resume.get_titles_amount() == max:
+                names.append(name)
+        return names
+
     def save_as_one_file(self, filename='persons'):
         path = os.path.join('.', 'persons')
         if not os.path.exists(path):
@@ -156,3 +175,21 @@ class Persons:
                 content += resume.text() + '\n'
                 file.write(content)
         logger.info('已保存全员信息为单文件')
+
+    def save_as_files(self, sp_names=None, save_all=False):
+        path = os.path.join('.', 'persons')
+        if not os.path.exists(path):
+            os.mkdir(path)
+        for name, resume in self.who.items():
+            if sp_names is None:
+                if not save_all:
+                    sp_names = self.get_max_titles_amount_persons()
+            if sp_names is not None and name not in sp_names:
+                continue
+
+            filename = name + '.txt'
+            filepath = os.path.join(path, filename)
+            with open(filepath, 'a', encoding='utf-8') as file:
+                content = resume.text() + '\n'
+                file.write(content)
+            logger.info('已保存[{}]履历为文件'.format(name))

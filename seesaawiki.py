@@ -181,7 +181,7 @@ def general_parse(boundary, persons, info):
     # 获取章节
     block_first = boundary.find_next('span', text=re_position)
     if block_first is None:
-        print('block_first is None，章节获取失败，可能是空章节='.format())
+        print('block_first is None，章节获取失败，可能是空章节'.format())
         logger.error('block_first is None，章节获取失败，可能是空章节')
         return
     if re.search('\d+話', block_first.get_text()):
@@ -210,8 +210,7 @@ def general_parse(boundary, persons, info):
             break
 
 
-def content_parse(content, info):
-    persons = Persons()
+def content_parse(content, persons, info, save=False):
     first = content.find(text=re_position)
     mainstaff_parse(first, persons, info)
     for boundary in content.find_all('hr'):
@@ -237,4 +236,23 @@ def content_parse(content, info):
     title = info['title']
     for x in ['\\', '/', ':', '*', '?', '"', '<', '>', '|']:
         title = title.replace(x, '')
-    persons.save_as_one_file(filename=title)
+    if save:
+        persons.save_as_one_file(filename=title)
+
+
+def pages_parse(urls, save_names=None, save_all=False):
+    persons = Persons()
+    info = {}
+    for url in urls:
+        info['title'], content = get_title_content_of(url)
+        content_parse(content, persons, info)
+    if save_names is None and save_all is True:
+        flag = input('警告：将会保持所有提取到的名字，生成大量文件，如要继续请按任意键')
+    try:
+        persons.save_as_files(sp_names=save_names, save_all=save_all)
+    except Exception as e:
+        print('保存人物文件时发生错误:' + str(e))
+        logger.error('保存人物文件时发生错误:' + str(e))
+        return
+    finally:
+        print('保存结束')
