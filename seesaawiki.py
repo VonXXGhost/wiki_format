@@ -240,16 +240,32 @@ def content_parse(content, persons, info, save=False):
         persons.save_as_one_file(filename=title)
 
 
-def pages_parse(urls, save_names=None, save_all=False):
+def pages_parse(urls, save_names=None):
     persons = Persons()
     info = {}
+    save_all = False
     for url in urls:
         info['title'], content = get_title_content_of(url)
         content_parse(content, persons, info)
-    if save_names is None and save_all is True:
+    if not save_names:
+        save_all = True
         flag = input('警告：将会保持所有提取到的名字，生成大量文件，如要继续请按任意键')
     try:
         persons.save_as_files(sp_names=save_names, save_all=save_all)
+    except Exception as e:
+        print('保存人物文件时发生错误:' + str(e))
+        logger.error('保存人物文件时发生错误:' + str(e))
+        return
+    finally:
+        print('保存结束')
+
+
+def page_parse(url):
+    persons = Persons()
+    info = {}
+    info['title'], content = get_title_content_of(url)
+    try:
+        content_parse(content, persons, info, save=True)
     except Exception as e:
         print('保存人物文件时发生错误:' + str(e))
         logger.error('保存人物文件时发生错误:' + str(e))
